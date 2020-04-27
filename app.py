@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, redirect
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 
@@ -16,9 +16,14 @@ create the db file by going to terminal:
 in terminal:
     add entries:
     >>> db.session.add(ModelName(**kwargs))
+    >>> db.session.commit()  # must commit or it disappear after session ends
     
     return all entries:
     >>> ModelName.query.all()
+    
+    querys:
+    >>> ModelName.query.all()[index]
+    >>> ModelName.query.all()[index].key
 """
 
 
@@ -34,17 +39,17 @@ class BlogPost(db.Model):
         return 'Blog post ' + str(self.id)
 
 
-all_posts = [
-    {
-        'title': "Post 1",
-        'content': "This is the content of post 1.",
-        'author': 'Terry'
-    },
-    {
-        'title': "Post 2",
-        'content': "This is the content of post 2."
-    }
-]
+# all_posts = [
+#     {
+#         'title': "Post 1",
+#         'content': "This is the content of post 1.",
+#         'author': 'Terry'
+#     },
+#     {
+#         'title': "Post 2",
+#         'content': "This is the content of post 2."
+#     }
+# ]
 
 
 @app.route('/')
@@ -52,8 +57,19 @@ def index():
     return render_template('index.html')
 
 
-@app.route('/posts')
+@app.route('/posts', methods=['GET', 'POST'])
 def posts():
+    # POST
+    if request.method == 'POST':
+        post_title = request.form['title']
+        post_content = request.form['content']
+        new_post = BlogPost(title=post_title, content=post_content, author='T')
+        db.session.add(new_post)  # insert
+        db.session.commit()
+        return redirect('/posts')
+    # GET
+    else:
+        all_posts = BlogPost.query.order_by(BlogPost.date_posted).all()  # retrieve
     return render_template('posts.html', posts=all_posts)
 
 

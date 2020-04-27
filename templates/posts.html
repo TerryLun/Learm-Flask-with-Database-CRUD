@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 
+<!--head properties-->
 {% block head %}
 <title>Posts</title>
 {% endblock %}
@@ -7,16 +8,30 @@
 {% block body %}
 <h1>All posts</h1>
 
-    {% for post in posts %}
-        <h2>{{ post.title }}</h2>
+<hr>
 
-        {% if post.author %}
-             <h4>By: {{ post.author }}</h4>
-        {% else %}
-             <h4>By: N/A</h4>
-        {% endif %}
+<h2>Create new:</h2>
+<form action="/posts" method="post">
+    Title: <input type="text" name="title" id="title">
+    <br>
+    Post: <textarea rows="3" name="content" id="content"></textarea>
+    <input type="submit" value="Post">
+</form>
 
-        <p>{{ post.content }}</p>
-    {% endfor %}
+<hr>
+
+
+{% for post in posts %}
+    <h2>{{ post.title }}</h2>
+
+    {% if post.author %}
+         <h4>By: {{ post.author }}</h4>
+    {% else %}
+         <h4>By: N/A</h4>
+    {% endif %}
+
+    <p>{{ post.content }}</p>
+    <hr>
+{% endfor %}
 
 {% endblock %}
