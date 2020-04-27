@@ -45,19 +45,6 @@ class BlogPost(db.Model):
         return 'Blog post ' + str(self.id)
 
 
-# all_posts = [
-#     {
-#         'title': "Post 1",
-#         'content': "This is the content of post 1.",
-#         'author': 'Terry'
-#     },
-#     {
-#         'title': "Post 2",
-#         'content': "This is the content of post 2."
-#     }
-# ]
-
-
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -79,6 +66,14 @@ def posts():
     else:
         all_posts = BlogPost.query.order_by(BlogPost.date_posted).all()  # retrieve
     return render_template('posts.html', posts=all_posts)
+
+
+@app.route('/posts/delete/<int:id>')
+def delete_post(id):
+    post = BlogPost.query.get_or_404(id)
+    db.session.delete(post)
+    db.session.commit()
+    return redirect('/posts')
 
 
 @app.route('/home/<string:name>/posts/<int:id>')
