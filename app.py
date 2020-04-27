@@ -18,12 +18,18 @@ in terminal:
     >>> db.session.add(ModelName(**kwargs))
     >>> db.session.commit()  # must commit or it disappear after session ends
     
-    return all entries:
-    >>> ModelName.query.all()
-    
     querys:
+    >>> ModelName.query.all()
+    >>> ModelName.query.first()
+    >>> ModelName.query.get(index)
     >>> ModelName.query.all()[index]
     >>> ModelName.query.all()[index].key
+    >>> ModelName.query.filter_by(key=value).all()
+    >>> ModelName.query.order_by(BlogPost.date_posted).all()
+    
+    delete:
+    >>> db.session.delete(ModelName.query...)
+    >>> db.session.commit()
 """
 
 
@@ -32,7 +38,7 @@ class BlogPost(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)  # up to 100 characters
     content = db.Column(db.Text, nullable=False)  # Text has no length limit
-    author = db.Column(db.String(20), nullable=False, default='N/A')
+    author = db.Column(db.String(20), nullable=False)
     date_posted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     def __repr__(self):
@@ -63,9 +69,11 @@ def posts():
     if request.method == 'POST':
         post_title = request.form['title']
         post_content = request.form['content']
-        new_post = BlogPost(title=post_title, content=post_content, author='T')
-        db.session.add(new_post)  # insert
-        db.session.commit()
+        post_author = request.form['author']
+        if post_title and post_content and post_author:
+            new_post = BlogPost(title=post_title, content=post_content, author=post_author)
+            db.session.add(new_post)  # insert
+        db.session.commit()  # don't forget
         return redirect('/posts')
     # GET
     else:
