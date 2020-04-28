@@ -33,7 +33,10 @@
     {% endif %}
 
     <p>{{ post.content }}</p>
+
+    <a href="posts/edit/{{post.id}}">Edit</a>
     <a href="posts/delete/{{post.id}}">Delete</a>
+
     <hr>
 {% endfor %}
 
